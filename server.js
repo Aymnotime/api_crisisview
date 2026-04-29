@@ -11,7 +11,12 @@ import interventionRoutes from './routes/intervention.routes.js';
 
 const app = express();
 
-app.use(cors());
+const corsOrigin = process.env.CORS_ORIGIN;
+app.use(
+    cors({
+        origin: corsOrigin ? corsOrigin.split(',').map((s) => s.trim()) : '*'
+    })
+);
 app.use(bodyParser.json());
 
 app.use('/techniciens', technicienRoutes);
@@ -24,8 +29,9 @@ async function start() {
         await sequelize.sync();
         console.log('Database connected');
 
-        app.listen(3001, () => {
-            console.log('Server running on http://localhost:3001');
+        const port = Number(process.env.PORT ?? 3001);
+        app.listen(port, () => {
+            console.log(`Server running on http://localhost:${port}`);
         });
     } catch (err) {
         console.error(err);
