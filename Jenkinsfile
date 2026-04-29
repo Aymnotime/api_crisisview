@@ -24,9 +24,16 @@ pipeline {
     stage('Test') {
       steps {
         dir('.') {
-          sh 'cp .env.example .env'
           sh 'sh scripts/test-db-up.sh'
-          sh 'npm test'
+          withEnv([
+            'DB_HOST=127.0.0.1',
+            'DB_PORT=3307',
+            'DB_NAME=incident_db',
+            'DB_USER=root',
+            'DB_PASSWORD=root'
+          ]) {
+            sh 'npm test'
+          }
           sh 'sh scripts/test-db-down.sh'
         }
       }
